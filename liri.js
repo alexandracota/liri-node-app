@@ -1,6 +1,3 @@
-//Spotify Developer Client ID: 491ef369bfa14aef8f3b1fb2e1e409de
-//Spotify Developer Client Secret: 5352573b8a3643379818e9501504a2c7
-
 //Node packages: Twitter, Spotify, Request, 
 //API: OMDB
 
@@ -9,74 +6,100 @@ var request = require("request");
 var twitter = require("node-twitter-api");
 var spotify = require("node-spotify-api");
 var omdb = require("omdb");
-
-
-
-fs.readFile("keys.js", "utf-8", function(err,data) {
-	if (err) {
-		return console.log(err);
-	}
-
+var keysFile = require("./keys.js");
 var command1 = process.argv[2];
 var command2 = process.argv.slice(3, process.argv.length);
+command2 = command2.join(" ");
+console.log(command1);
+console.log(command2);
 
-switch (command1) {
-	case "my-tweets":
-		console.log("My tweets!");
-		//Get consumer key from keys.js
-		var consumerKey = fs.readFile("keys.js/exports.twitterKeys.consumer_key");
-		//Get token key from keys.js
-		var tokenKey = fs.readFile("keys.js/exports.twitterKeys.access_token_key");
-		//make a request to the API
-		request("https://accounts.spotify.com/authorize/?client_id=" + 491ef369bfa14aef8f3b1fb2e1e409de + "&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Fcallback&scope=user-read-private%20user-read-email&state=34fFs29kd09", function (err, response, body) {
-			if (!error && response.statuscode == 200) {
-				var info = JSON.parse(body);
-			} else {
-				console.log("No spotify data available.");
-			}
-		})
-		//Show your last 20 tweets and when they were created in terminal
-		//Make a call to the API to grab the request information
-		break;
+//Twitter access
+var twitterConsumer = keysFile.twitterKeys.consumer_key;
+var twitterAccess = keysFile.twitterKeys.access_token_key;
+var twitterSecret = keysFile.twitterKeys.access_token_secret;
 
-	case "spotify-this-song":
-		console.log("Spotify this song!");
-		spotify.search({ type: 'track', query: request }, function(err,data){
-			if (err) {
-				return console.log("Error occurred: " + err);
-			}
-			console.log(data);
-		});
-		//Show the following information:
-		//Artist(s)
-		//Song Name (default "The Sign" by Ace of Base)
-		//Preview link from the song on Spotify
-		//Album the song is from
+//Spotify access
+var spotifyClient = keysFile.spotifyKeys.client_id;
+var spotifySecret = keysFile.spotifyKeys.client_secret;
 
-		break;
+//OMDB access
+var omdbApiKey = keysFile.omdbKeys.api_key;
 
-	case "movie-this":
-		console.log("Movie this!");
-		//Search function and pass err and movies as the two parameters.
-		omdb.search(request, function(err, movies) {
-			//To return error messages:
-			if (err) {
-				return console.log(err);
-			}
-			if (movies.length < 1) {
-				return console.log("No movies were found!");
-			}
-			//Function for retrieving movie data.
-			movies.forEach(function(movie) {
-				console.log(movie.title)
+
+
+// fs.readFile("keys.js", "utf-8", function(err,data) {
+// 	if (err) {
+// 		return console.log(err);
+// 	}
+
+	switch (command1) {
+		//Twitter request
+		case "my-tweets":
+			request("https://api.twitter.com/1.1/search/tweets.json?q=" + "&since_id=" + "&max_id=" + "&count=20", function (err, data) {
+				if (!err && response.statuscode == 200) {
+					console.log(data);
+				} else if (err) {
+					return console.log("No tweets available."+ err);
+				} else {
+					console.log("Ooops an error occurred!");
+				}
 			});
-		})
+			//Show your last 20 tweets and ***WHEN THEY WERE CREATED*** in terminal
 		break;
 
-	case "do-what-it-says":
-		console.log("Do what it says!");
+		//Spotify request
+		case "spotify-this-song":
+			request("https://accounts.spotify.com/authorize/?client_id=" + spotifyClient + "&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Fcallback&scope=user-read-private%20user-read-email&state=34fFs29kd09", function(err, data){
+				if (!err && response.statuscode === 200) {
+					console.log(data);
+				} else if (err) {
+					return console.log("Error occurred: " + err);
+				} else {
+					console.log("Oops, something went wrong!");
+				}
+				
+			});
+			//Show the following information:
+			//Artist(s)
+			//Song Name (default "The Sign" by Ace of Base)
+			//Preview link from the song on Spotify
+			//Album the song is from
+
+			break;
+
+		//Omdb request.	
+		case "movie-this":
+		
+			if (command2 !== "") {
+				request("http://www.omdbapi.com/?t=" + command2 + "&y=&r=&tomatoes=&plot=short&apikey=40e9cece", function(err, response, body) {
+					console.log(response);
+					console.log(body);
+					console.log(err);
+					if (!err && body.statuscode === 200) {
+						console.log(body);
+					} else if (err) {
+						return console.log("No movies for you!" + err);
+					} else {
+						console.log("Oops, an error occured!");
+					}
+				})
+					} else if (command2 === "") {
+						request("http://www.omdbapi.com/?t=Mr.Nobody&y=&r=&tomatoes=&plot=short&apikey=40e9cece"), function(err, data) {
+							console.log(data);
+					}
+				}
+			
 		break;
 
-}
+		//LIRI will use command in random.txt to run command.
+		case "do-what-it-says":
 
-});
+		break;
+
+		}
+
+	// });
+
+
+
+

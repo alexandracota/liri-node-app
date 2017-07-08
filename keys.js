@@ -1,5 +1,3 @@
-console.log('this is loaded');
-
 exports.twitterKeys = {
   consumer_key: 'RbI5CyPaDqVMYxWdU5nvf2zKz',
   consumer_secret: 'lXF7FgFgOTU2QRyXzFhH6Vd2MUHGz0mObRpPPAkxZ7HpeF7gGl',
@@ -8,6 +6,11 @@ exports.twitterKeys = {
 }
 
 exports.spotifyKeys = {
-	client_id: 491ef369bfa14aef8f3b1fb2e1e409de
-	client_secret: 5352573b8a3643379818e9501504a2c7
+	client_id: '491ef369bfa14aef8f3b1fb2e1e409de',
+	client_secret: '5352573b8a3643379818e9501504a2c7'
 }
+
+exports.omdbKeys = {
+	api_key: "40e9cece"
+}
+
