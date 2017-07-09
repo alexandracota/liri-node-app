@@ -1,6 +1,7 @@
 var fs = require("fs");
 var request = require("request");
-var twitter = require("node-twitter-api");
+//var twitter = require("node-twitter-api");
+var twitter = require("twitter");
 var spotify = require("node-spotify-api");
 var omdb = require("omdb");
 var keysFile = require("./keys.js");
@@ -10,6 +11,7 @@ command2 = command2.join(" ");
 
 //Twitter access
 var twitterConsumer = keysFile.twitterKeys.consumer_key;
+var twitterConsumerSecret = keysFile.twitterKeys.consumer_secret;
 var twitterAccess = keysFile.twitterKeys.access_token_key;
 var twitterSecret = keysFile.twitterKeys.access_token_secret;
 
@@ -21,58 +23,66 @@ var spotifySecret = keysFile.spotifyKeys.client_secret;
 var omdbApiKey = keysFile.omdbKeys.api_key;
 
 	switch (command1) {
-		//Twitter request
+		// //Twitter request
 		case "my-tweets":
-			//This request needs to access my access key to retrieve data from my twitter account.
-			//Show my last 20 tweets and ***WHEN THEY WERE CREATED*** in terminal
-			request("https://api.twitter.com/1.1/search/tweets.json?q=%23@alex_cota&since_id=45&max_id=100&count=20", function (err, data) {
-				if (err || data.statuscode !== 200) {
-					return console.log("No tweets available."+ err);
-				} else if (!err && data.statuscode == 200) {
-					console.log(data);
-				};
+
+			var client = new twitter ({
+				consumer_key: twitterConsumer,
+				consumer_secret: twitterConsumerSecret,
+				access_token_key: twitterAccess,
+				access_token_secret: twitterSecret
 			});
+
+			client.get('statuses/user_timeline', {q: 'node.js', limit: 20}, function(error, tweets, response) {
+				console.log(tweets);
+			})
+
 		break;
 
 		//Spotify request
 		case "spotify-this-song":
-			request("https://accounts.spotify.com/authorize/?client_id=" + spotifyClient + "&response_type=code&redirect-url=http://google.com/search&q=" + command2 + "&type=song", function(err, data) {
-				if (err) {
-					return console.log("Error occurred: " + err);
-				} else if (!err && data.statuscode === 200) {
-					console.log(data);
-				}
-				
+			var newSpotify = new spotify ({
+				id: spotifyClient,
+				secret: spotifySecret
 			});
-			//Show the following information:
-			//Artist(s)
-			//Song Name (default "The Sign" by Ace of Base)
-			//Preview link from the song on Spotify
-			//Album the song is from
+
+			if (command2 !== "") {
+				newSpotify
+				.search({ 
+					type: 'track', query: command2})
+
+				.then(function(response) {
+					console.log(response);
+				})
+				.catch(function(err) {
+					console.log(error);
+				})
+		}
 
 			break;
 
 		//Omdb request.	
-		// case "movie-this":
+		case "movie-this":
 		
-		// 	if (command2 !== "") {
-		// 		request("http://www.omdbapi.com/?t=" + command2 + "&y=&r=&tomatoes=&plot=short&apikey=40e9cece", function(err, response, body) {
-		// 			console.log(response);
-		// 			console.log(body);
-		// 			console.log(err);
-		// 			if (err) {
-		// 				return console.log("No movies for you!" + err);
-		// 			} else if (!err && body.statuscode === 200) {
-		// 				console.log(body);
-		// 			}
-		// 		})
-		// 			} else if (command2 === "") {
-		// 				request("http://www.omdbapi.com/?t=Mr.Nobody&y=&r=&tomatoes=&plot=short&apikey=40e9cece"), function(err, data) {
-		// 					console.log(data);
-		// 			}
-		// 		}
+			if (command2 !== "") {
+				request("http://www.omdbapi.com/?t=" + command2 + "&y=&r=&tomatoes=&plot=short&apikey=40e9cece", function(err, response, body) {
+					console.log(response);
+					console.log(body);
+					console.log(err);
+					if (err) {
+						return console.log("No movies for you!" + err);
+					} else if (!err && body.statuscode === 200) {
+						console.log(body);
+					}
+				})
+				//If no value is entered, return details for Mr. Nobody.
+					} else if (command2 === "") {
+						request("http://www.omdbapi.com/?t=Mr.Nobody&y=&r=&tomatoes=&plot=short&apikey=40e9cece", function(err, data) {
+							console.log(data);
+					})
+				}
 			
-		// break;
+		break;
 
 		//LIRI will use command in random.txt to run command.
 		case "do-what-it-says":
@@ -80,11 +90,22 @@ var omdbApiKey = keysFile.omdbKeys.api_key;
 			console.log(response);
 		});
 
+		function getResponse() {
+			newSpotify.search({ 
+					type: 'track', query: "I want it that way"}, function(err, data) {
+					if (err || data.statuscode !== 200) {
+						return console.log("Error occurred: " + err);
+					} else if (!err && data.statuscode == 200) {
+						console.log(data);
+					}
+				
+				})
+		};
+
 		break;
 
 		}
 
-	// });
 
 
 

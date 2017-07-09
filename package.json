@@ -21,6 +21,7 @@
     "node-spotify-api": "^1.0.5",
     "node-twitter-api": "^1.8.0",
     "omdb": "^0.8.0",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "twitter": "^1.7.1"
   }
 }
