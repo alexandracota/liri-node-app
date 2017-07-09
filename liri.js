@@ -95,10 +95,7 @@ var omdbApiKey = keysFile.omdbKeys.api_key;
 		fs.readFile("random.txt", "utf-8", function(err, response){
 			var splitResponse = response.split(",");
 			console.log(splitResponse);
-			//var action = splitResponse[0];
 			var defaultSong = splitResponse[1];
-			// var quotation = " " ";
-			// actionFormatted = quotation + action + quotation;
 		
 
 		var defaultSpotify = new spotify ({
@@ -116,17 +113,6 @@ var omdbApiKey = keysFile.omdbKeys.api_key;
 					console.log(error);
 					});
 		});
-		// function getResponse() {
-		// 	newSpotify.search({ 
-		// 			type: 'track', query: "I want it that way"}, function(err, data) {
-		// 			if (err || data.statuscode !== 200) {
-		// 				return console.log("Error occurred: " + err);
-		// 			} else if (!err && data.statuscode == 200) {
-		// 				console.log(data);
-		// 			}
-				
-		// 		})
-		// };
 
 		break;
 
