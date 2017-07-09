@@ -46,18 +46,24 @@ var omdbApiKey = keysFile.omdbKeys.api_key;
 				secret: spotifySecret
 			});
 
-			if (command2 !== "") {
-				newSpotify
+		if (command2 !== "") {
+			newSpotify
 				.search({ 
 					type: 'track', query: command2})
-
 				.then(function(response) {
-					console.log(response);
+					console.log(JSON.stringify(response));
 				})
 				.catch(function(err) {
 					console.log(error);
-				})
-		}
+					});
+			} else {
+				newSpotify
+					.search({
+						type: 'track', query: "The Sign Ace of Base"})
+					.then(function(response){
+						console.log(JSON.stringify(response));
+					})
+					}
 
 			break;
 
